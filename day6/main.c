@@ -6,7 +6,7 @@
 /*   By: tbruinem <tbruinem@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/12/06 10:25:21 by tbruinem       #+#    #+#                */
-/*   Updated: 2019/12/06 14:57:03 by tbruinem      ########   odam.nl         */
+/*   Updated: 2019/12/06 15:37:16 by tbruinem      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,11 @@ t_planet	*get_planets(int fd)
 		{
 			id[i] = 0;
 //			tmp = find_pl(&list, id);
-			tmp = find_l(&storage, id);				//find the parent in the storage
+			tmp = find_l(storage, id);				//find the parent in the storage
 			if (tmp == 0)							//if it doesnt exist in the storage <-
 			{
 				tmp = p_new(strdup(id));			//I make a new planet
-				lst = lst_new(&tmp);				//I make a new list containing the planet
+				lst = lst_new(tmp);				//I make a new list containing the planet
 				lst_addback(&storage, lst);			//I add the list to the end
 //				if (list == NULL)					//If there is no list root yet, I turn this parent into the root.
 //					list = tmp;
@@ -54,18 +54,19 @@ t_planet	*get_planets(int fd)
 		else if (c == '\n')
 		{
 			id[i] = 0;
-			found = find_l(&storage, id); 			//find the child in the list (see if it exists)
+			found = find_l(storage, id); 			//find the child in the list (see if it exists)
 //			if (found == list && list != NULL) 		//if the child I've found is the current start of the list
 //				list = replace_root(&list, tmp); 	//then I replace the current root(the child) with the parent
 			if (found == 0) 						//if I have not found the child (it doesnt exist yet)
 			{
 				found = p_new(strdup(id)); 			//then I make a new planet and a new list
-				child = lst_new(&found); 			//and make a new list, containing the new planet
-				add_child(&tmp, p_new(strdup(id))); //I add the child to its parent
+				child = lst_new(found); 			//and make a new list, containing the new planet
+				add_child(tmp, &found); //I add the child to its parent
 				lst_addback(&storage, child); 		//and then I add the new list to the storage
+//				lst_addback(&storage, lst);
 			}
 			else
-				add_child(&tmp, found);				//if it does exist in the storage, I add it to its parent
+				add_child(tmp, &found);				//if it does exist in the storage, I add it to its parent
 //			printf("%s\n", id);
 			i = 0;
 		}
@@ -77,7 +78,7 @@ t_planet	*get_planets(int fd)
 		red = read(fd, &c, 1);
 	}
 //	print_ll(storage);
-	list = find_l(&storage, "COM");
+	list = find_l(storage, "COM");
 	traverse_planets(list);
 	return (list);
 }

@@ -6,7 +6,7 @@
 /*   By: tbruinem <tbruinem@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/12/06 13:32:24 by tbruinem       #+#    #+#                */
-/*   Updated: 2019/12/06 15:00:23 by tbruinem      ########   odam.nl         */
+/*   Updated: 2019/12/06 15:36:18 by tbruinem      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@ void		traverse_planets(t_planet *current)
 	if (current->c3)
 		printf("c3: %5s | ", current->c3->id);
 	printf("\n");
-		traverse_planets(tmp->c1);
-		traverse_planets(tmp->c2);
-		traverse_planets(tmp->c3);
+	traverse_planets(tmp->c1);
+	traverse_planets(tmp->c2);
+	traverse_planets(tmp->c3);
 }
 
 t_planet	*p_new(char *id)
@@ -47,26 +47,26 @@ t_planet	*p_new(char *id)
 	return (new);
 }
 
-void		add_child(t_planet **parent, t_planet *child)
+void		add_child(t_planet *parent, t_planet **child)
 {
 	t_planet	*tmp;
 
-	if (parent == NULL || (*parent) == NULL)
+	if (parent == NULL)
 		return ;
 //	printf("Parent: %5s | Child %5s\n", (*parent)->id, child->id);
-	if ((*parent)->c1 == 0)
+	if (parent->c1 == 0)
 	{
-		(*parent)->c1 = child;
+		parent->c1 = *child;
 		return ;
 	}
-	if ((*parent)->c2 == 0)
+	if (parent->c2 == 0)
 	{
-		(*parent)->c2 = child;
+		parent->c2 = *child;
 		return ;
 	}
-	if ((*parent)->c3 == 0)
+	if (parent->c3 == 0)
 	{
-		(*parent)->c3 = child;
+		parent->c3 = *child;
 		return ;
 	}
 }
@@ -77,7 +77,7 @@ t_planet	*replace_root(t_planet **list, t_planet *new)
 
 	tmp = *list;
 	*list = new;
-	add_child(list, tmp);
+	add_child(*list, &tmp);
 	return (*list);
 }
 

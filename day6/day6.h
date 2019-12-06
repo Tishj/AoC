@@ -39,11 +39,11 @@ typedef struct			s_list
 void		print_ll(t_list *storage);
 void		print_planets(t_planet **to_print);
 
-t_list		*lst_new(t_planet **planet);
+t_list		*lst_new(t_planet *planet);
 void		lst_addback(t_list **store, t_list *new);
-t_planet	*find_l(t_list **store, char *id);
+t_planet	*find_l(t_list *store, char *id);
 
-void		add_child(t_planet **parent, t_planet *child);
+void		add_child(t_planet *parent, t_planet **child);
 t_planet	*replace_root(t_planet **list, t_planet *new);
 t_planet	*find_pl(t_planet **list, char *to_find);
 t_planet	*p_new(char *id);
