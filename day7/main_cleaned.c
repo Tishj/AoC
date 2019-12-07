@@ -50,7 +50,6 @@ int		*get_array(int fd, int len)
 	res = 0;
 	while (i <= len)
 	{
-//		printf("current: %c\n", c);
 		if (c == '-')
 			n = -1;
 		if (c >= '0' && c <= '9')
@@ -97,7 +96,6 @@ int		do_add(int *array, int *index, int *code)
 	p1 = get_value(code, array, (*index) + 1);
 	p2 = get_value(code, array, (*index) + 2);
 	array[pos] = p1 + p2;
-//	debug_me('+', (*index), array, p1, p2);
 	*index = (*index) + 4;
 }
 
@@ -111,46 +109,34 @@ int		do_mul(int *array, int *index, int *code)
 	p1 = get_value(code, array, (*index) + 1);
 	p2 = get_value(code, array, (*index) + 2);
 	array[pos] = p1 * p2;
-//	debug_me('*', (*index), array, p1, p2);
 	*index = (*index) + 4;
 }
 
-int		do_set(int *array, int *index, int *code, int INPUTS, int phase, int *start, char *signal, int *t_thrust)
+int		do_set(int *array, int *index, int *code, char setting, int *start, int output)
 {
 	int p1;
 	int pos;
-	char *str;
 
-	str = ft_itoa(INPUTS);
-//	printf("INPUTS: %s", str);
 	pos = array[(*index) + 1];
-	printf("start: %d | output: %d\n", *start, *t_thrust);
+	p1 = output;
 	if (*start == 1)
-	{
-		p1 = (str[phase] - '0');
-		*start = 0;
-	}
-	else
-		p1 = *t_thrust;
-//	printf("INPUTS: %s | AMP:%5d | current input: %d\n", str, *len, p1);
+		p1 = (setting - '0');
 	array[pos] = p1;
-//	debug_me('=', (*index), array, p1, 0);
+	*start = 0;
 	*index = (*index) + 2;
 }
 
-int		do_prnt(int *array, int *index, int *code, int *t_thrust)
+int		do_prnt(int *array, int *index, int *code, int output)
 {
 	int p1;
 	int pos;
 
 	pos = array[(*index) + 1];
 	p1 = get_value(code, array, (*index) + 1);
-//	if (*t_thrust == 0)
-		*t_thrust = p1;
-	printf("output signal: %d\n", *t_thrust);
-//	printf("THRUSTER SIGNAL: %d\n", p1);
-//	printf("%-6d | %d,%d                     |\n\nPRINT: %d\n\n", (*index), array[(*index)], array[(*index)], p1);
+	output = p1;
+//	printf("output signal: %d\n", output);
 	*index = (*index) + 2;
+	return (output);
 }
 
 void	do_jump(int *array, int *index, int *code, int op)
@@ -184,51 +170,38 @@ int		do_comp(int *array, int *index, int *code, int op)
 		array[pos] = 1;
 	else
 		array[pos] = 0;
-//	debug_me('*', (*index), array, p1, p2);
 	*index = (*index) + 4;
 }
 
-void	do_op(int *array, int *index, int code, int *t_thrust, int INPUTS, int phase, int *start, char *signal)
+int		do_op(int *array, int *i, int output, int *start, char setting)
 {
 	int op;
+	int code;
 
+	code = array[*i];
 	op = get_mod(&code);
-	if (get_mod(&code) != 0)
+	if (get_mod(&code) != 0 || (op < 1 || 8 < op))
 	{
-		*index = *index + 1;
-		return ;
+		*i = *i + 1;
+		return (output);
 	}
-//	printf("op: %d\n", op);
 	if (op == 1)
-		(do_add(array, index, &code));
-	else if (op == 2)
-		(do_mul(array, index, &code));
-	else if (op == 3)
-		(do_set(array, index, &code, INPUTS, phase, start, signal, t_thrust));
-	else if (op == 4)
-		(do_prnt(array, index, &code, t_thrust));
-	else if (op == 5)
-		(do_jump(array, index, &code, op));
-	else if (op == 6)
-		(do_jump(array, index, &code, op));
-	else if (op == 7)
-		(do_comp(array, index, &code, op));
-	else if (op == 8)
-		(do_comp(array, index, &code, op));
-	else
-		*index = *index + 1;
-}
-
-void	clean_array(char *array)
-{
-	int i;
-
-	i = 0;
-	while (array[i])
-	{
-		array[i] = 0;
-		i++;
-	}
+		(do_add(array, i, &code));
+	if (op == 2)
+		(do_mul(array, i, &code));
+	if (op == 3)
+		(do_set(array, i, &code, setting, start, output));
+	if (op == 4)
+		output = do_prnt(array, i, &code, output);
+	if (op == 5)
+		(do_jump(array, i, &code, op));
+	if (op == 6)
+		(do_jump(array, i, &code, op));
+	if (op == 7)
+		(do_comp(array, i, &code, op));
+	if (op == 8)
+		(do_comp(array, i, &code, op));
+	return (output);
 }
 
 int		*array_dup(int *org, int len)
@@ -247,93 +220,69 @@ int		*array_dup(int *org, int len)
 	return (new);
 }
 
-void	intcode(int *array, int phase, int output, int input)
+int		intcode(int *array, int output, char setting)
 {
 	int i;
-	int in;
 	int start;
 
+//	printf("setting: %c\n", setting);
 	start = 1;
 	i = 0;
 	while (array[i] != 99)
-	{
-		in = (array[i]);
-		do_op(&(array + i), in, &output, input, phase, &start);
-	}
+		output = do_op(array, &i, output, &start, setting);
+	return (output);
+}
 
+int		phase_iterator(int *orig, char *sequence)
+{
+	int phase;
+	int *dup;
+	int output;
+
+	output = 0;
+	phase = 0;
+	while (phase < 5)
+	{
+		dup = array_dup(orig, 506);
+		output = intcode(dup, output, *(sequence + phase));
+		phase++;
+		free(dup);
+	}
+	return (output);
 }
 
 int		input_iterator(int input, int *orig)
 {
-	int *dup;
 	int phase;
 	int max_signal;
-	int tmp_signal;
+	char *sequence;
+	int output;
 
 	max_signal = 0;
-	dup = array_dup(orig, 506)
 	input = get_valid(input);
 	while (input > 0)
 	{
-		phase = 0;
-		while (phase < 5)
-		{
-			intcode(dup, phase);
-			phase++;
-		}
-
+		sequence = ft_itoa(input);
+		output = phase_iterator(orig, sequence);
+		if (output > max_signal)
+			max_signal = output;
+		printf("SEQUENCE: %s | signal generated: %d\n", sequence, output);
+		input = get_valid(input - 1);
 	}
-
+	return (max_signal);
 }
 
 int		main(int argc, char **input)
 {
 	int fd;
-	int i;
-	int *array;
-	int phase = 0;
-	int in;
-	int INPUTS;
-	int t_thrust = 0;
-	int m_thrust = 0;
-	int t_signal = 0;
-	int m_signal = 0;
-	int len = 0;
-	int start = 1;
 	int *org;
+	int max_signal;
 
-	INPUTS = 99999;
 	if (argc < 2)
 		return (0);
 	fd = open(input[1], O_RDONLY);
 	org = get_array(fd, 506);
-	array = array_dup(org, 506);
-
-
-	INPUTS = get_valid(INPUTS - 1);
-	while (INPUTS > 0)
-	{
-		printf("INPUTS: %d\n", INPUTS);
-		while (phase < 5)
-		{
-			i = 0;
-			while (array[i] != 99)
-			{
-				in = (array[i]);
-				do_op(array, &i, in, &output, INPUTS, phase, &start);
-			}
-			start = 1;
-			phase++;
-			free(array);
-			array = array_dup(org, 506);
-		}
-		if (output > m_signal)
-			m_signal = output;
-		printf("THRUST: %d\n", output);
-		output = 0;
-		phase = 0;
-		INPUTS = get_valid(INPUTS - 1);
-	}
-	printf("max signal: %d\n", m_signal);
+	max_signal = input_iterator(99999, org);
+	printf("MAX SIGNAL: %d\n", max_signal);
 	return (0);
 }
