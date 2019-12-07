@@ -225,13 +225,13 @@ int		intcode(int *i, int *array, int output, char setting, int *start, int *phas
 	int old_out;
 
 	old_out = output;
-	while (array[*i] != 99)
+	while (array[*i] && array[*i] != 99)
 	{
 		output = do_op(array, i, output, start, setting);
 		if (old_out != output)
 			break ;
 	}
-	if (*phase == 4 && array[*i] == 99)
+	if ((array[*i] == 99 && *phase == 4) || array[*i] == 0)
 		*loop = 0;
 	return (output);
 }
@@ -254,9 +254,9 @@ int		phase_iterator(int *orig, char *sequence)
 	int *dup;
 	int output;
 	int loop;
-	int *storage[5];
-	int counters[5];
-	int start[5];
+	int *storage[6];
+	int counters[6];
+	int start[6];
 
 	start[0] = 1;
 	start[1] = 1;
