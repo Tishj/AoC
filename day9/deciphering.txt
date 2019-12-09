@@ -1,0 +1,15 @@
+1102,34463338,34463338,63,	do 34463338 * 34463338 and store the result in index: 63
+1007,63,34463338,63,		do 1234344546 < 34463338?, set 63 to 1 if true
+1005,63,53,			do (index63)0 == 1, jump to 53 if true
+1102,3,1,1000,			do 3 * 1 and store the result in index: 1000
+109,988,			do rbase(0) + 988, rbase is now 988
+209,12,				do rbase(988) + index 1000(3) = 991
+9,1000,				do rbase(991) + index 1000(3) = 994
+209,6,				do rbase(994) + index 1000(3) = 997
+209,3,				do rbase(997) + index 1000(3) = 1000
+203,0,				do set input(1) to index 1000 = 1
+1008,1000,1,63,			do (index 1000)3 == 1, set index 63 to 1 if true
+1005,63,65,			do (index63)0 == 1, jump to index 65 if true
+1008,1000,2,63,			do (index 1000)3 == 2, jump to index 63 if true
+1005,63,904,			do (index63)0 == 1, jump to index 904 if true
+1008,1000,0,63			do (index 1000)3 == 0, jump to index 63 if true

@@ -6,7 +6,7 @@
 /*   By: tbruinem <tbruinem@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/12/05 20:01:13 by tbruinem       #+#    #+#                */
-/*   Updated: 2019/12/09 19:52:29 by tbruinem      ########   odam.nl         */
+/*   Updated: 2019/12/09 23:59:10 by tbruinem      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,23 @@
 void	debug_me(char c, int i, long *array, long p1, long p2)
 {
 	if (c == '+')
-		printf("%-6d | %-6ld,%-6ld,%-6ld,%-4ld | %-8ld + %-8ld = %-8ld\n", i, array[i], array[i + 1], array[i + 2], array[i + 3], p1, p2, array[array[i + 3]]);
+		printf("%-6d | %-16ld,%-16ld,%-16ld,%-16ld | %-8ld + %-8ld = %-8ld\n", i, array[i], array[i + 1], array[i + 2], array[i + 3], p1, p2, array[array[i + 3]]);
 	if (c == '*')
-		printf("%-6d | %-6ld,%-6ld,%-6ld,%-4ld | %-8ld * %-8ld = %-8ld\n", i, array[i], array[i + 1], array[i + 2], array[i + 3], p1, p2, array[array[i + 3]]);
+		printf("%-6d | %-16ld,%-16ld,%-16ld,%-16ld | %-8ld * %-8ld = %-8ld\n", i, array[i], array[i + 1], array[i + 2], array[i + 3], p1, p2, array[array[i + 3]]);
 	if (c == 'i')
-		printf("%-6d | %-6ld,%-6ld             | %-8ld = %-8ld\n", i, array[i], array[i + 1], p1, array[array[i + 1]]);
+		printf("%-6d | %-16ld,%-16ld                                   | %-8ld = %-8ld\n", i, array[i], array[i + 1], p1, array[array[i + 1]]);
+	if (c == 'o')
+		printf("%-6d | %-16ld,%-16ld                                   | %-8ld printed\n", i, array[i], array[i + 1], p1);
 	if (c == '<')
-		printf("%-6d | %-6ld,%-6ld             | %-8ld = %-8ld\n", i, array[i], array[i + 1], p1, array[array[i + 1]]);
+		printf("%-6d | %-16ld,%-16ld,%-16ld                  | %-8ld < %-8ld? %-8ld\n", i, array[i], array[i + 1], array[i + 2], p1, p2, array[array[i + 2]]);
+	if (c == 't')
+		printf("%-6d | %-16ld,%-16ld                                   | %-8ld (== 1)? jump %-8ld\n", i, array[i], array[i + 1], p1, array[i + 2]);
+	if (c == 'f')
+		printf("%-6d | %-16ld,%-16ld                                   | %-8ld (== 0)? jump %-8ld\n", i, array[i], array[i + 1], p1, array[i + 2]);
+	if (c == '=')
+		printf("%-6d | %-16ld,%-16ld,%-16ld                  | %-8ld == %-8ld? %-8ld\n", i, array[i], array[i + 1], array[i + 2], p1, p2, array[array[i + 2]]);
+	if (c == 'r')
+		printf("%-6d | %-16ld,%-16ld                                   | %-8ld + %-8ld = %-8ld relative base\n", i, array[i], array[i + 1], p2 - p1, p1, p2);
 }
 
 void	print_array(long *array, int len)
@@ -31,7 +41,7 @@ void	print_array(long *array, int len)
 	i = 0;
 	while (i <= len)
 	{
-		printf("%ld\n", array[i]);
+		printf("%4d | %ld\n", i, array[i]);
 		i++;
 	}
 }
@@ -89,55 +99,78 @@ long	get_value(int *code, long *array, int index, int *rbase)
 	int mod;
 
 	mod = get_mod(code);
+//	printf("%-6d | mod: %d | rbase: %d | array[rbase + index] = %-16ld\n", index - 1, mod, *rbase, array[*rbase + index]);
 	pos = array[index];
 	if (mod == 0)
 		return (array[pos]);
 	else if (mod == 1)
 		return (array[index]);
-	else
-		return (array[index + *rbase]);
+	else if (mod == 2)
+		return (array[array[index] + *rbase]);
 }
 
 void	do_add(long *array, int *index, int *code, int *rbase)
 {
-	int p1;
-	int p2;
+	long p1;
+	long p2;
 	int pos;
+	int posmode;
 
-	pos = array[(*index) + 3];
 	p1 = get_value(code, array, (*index) + 1, rbase);
 	p2 = get_value(code, array, (*index) + 2, rbase);
+	posmode = get_mod(code);
+	if (posmode == 0)
+		pos = array[*index + 3];
+	if (posmode == 1)
+		pos = *index + 3;
+	if (posmode == 2)
+		pos = array[*index + 3] + *rbase;
 	array[pos] = p1 + p2;
+	debug_me('+', *index, array, p1, p2);
 	*index = (*index) + 4;
 }
 
 void	do_mul(long *array, int *index, int *code, int *rbase)
 {
-	long	p1;
-	long	p2;
-	int		pos;
+	long p1;
+	long p2;
+	int pos;
+	int posmode;
 
-	pos = array[(*index) + 3];
 	p1 = get_value(code, array, (*index) + 1, rbase);
 	p2 = get_value(code, array, (*index) + 2, rbase);
-//	debug_me('*', *index, array, p1, p2);
+	posmode = get_mod(code);
+	if (posmode == 0)
+		pos = array[*index + 3];
+	if (posmode == 1)
+		pos = *index + 3;
+	if (posmode == 2)
+		pos = array[*index + 3] + *rbase;
 	array[pos] = p1 * p2;
+	debug_me('*', *index, array, p1, p2);
 	*index = (*index) + 4;
 }
 
 void	do_set(long *array, int *index, int *code, char setting,
-		int *start, int output)
+		int *start, long output, int *rbase)
 {
-	int p1;
+	long p1;
 	int pos;
+	int posmode;
 
-	pos = array[(*index) + 1];
-	p1 = output;
+	p1 = get_value(code, array, (*index) + 1, rbase);
+	posmode = get_mod(code);
+	if (posmode == 0)
+		pos = array[*index + 3];
+	if (posmode == 1)
+		pos = *index + 3;
+	if (posmode == 2)
+		pos = array[*index + 3] + *rbase;
 	if (*start == 1)
 		p1 = (setting - '0');
-//	debug_me('i', *index, array, p1, 0);
 	array[pos] = p1;
 	*start = 0;
+	debug_me('i', *index, array, p1, 0);
 	*index = (*index) + 2;
 }
 
@@ -146,40 +179,66 @@ long	do_prnt(long *array, int *index, int *code, int *rbase)
 	long p1;
 
 	p1 = get_value(code, array, (*index) + 1, rbase);
-	printf("output signal: %ld\n", p1);
+//	printf("output signal: %ld\n", p1);
 	*index = (*index) + 2;
+	debug_me('o', *index, array, p1, 0);
 	return (p1);
 }
 
 void	do_jump(long *array, int *index, int *code, int op, int *rbase)
 {
-	int p1;
-	int p2;
-	int pos;
+	long p1;
+	long p2;
+//	int pos;
+//	int posmode;
 
 	p1 = get_value(code, array, (*index) + 1, rbase);
 	p2 = get_value(code, array, (*index) + 2, rbase);
+/* 	if (posmode == 0)
+		pos = array[*index + 3];
+	if (posmode == 1)
+		pos = *index + 3;
+	if (posmode == 2) */
 	if (p1 != 0 && op == 5)
+	{
 		(*index) = p2;
+		debug_me('t', *index, array, p1, p2);
+	}
 	else if (p1 == 0 && op == 6)
+	{
 		(*index) = p2;
+		debug_me('f', *index, array, p1, p2);
+	}
 	else
 		(*index) = (*index) + 3;
 }
 
 void	do_comp(long *array, int *index, int *code, int op, int *rbase)
 {
-	int p1;
-	int p2;
+	long p1;
+	long p2;
 	int pos;
+	int posmode;
 
-	pos = array[(*index) + 3];
 	p1 = get_value(code, array, (*index) + 1, rbase);
 	p2 = get_value(code, array, (*index) + 2, rbase);
+	posmode = get_mod(code);
+	if (posmode == 0)
+		pos = array[*index + 3];
+	if (posmode == 1)
+		pos = *index + 3;
+	if (posmode == 2)
+		pos = array[*index + 3] + *rbase;
 	if (p1 < p2 && op == 7)
+	{
 		array[pos] = 1;
+		debug_me('<', *index, array, p1, p2);
+	}
 	else if (p1 == p2 && op == 8)
+	{
 		array[pos] = 1;
+		debug_me('=', *index, array, p1, p2);
+	}
 	else
 		array[pos] = 0;
 	*index = (*index) + 4;
@@ -187,10 +246,12 @@ void	do_comp(long *array, int *index, int *code, int op, int *rbase)
 
 void	do_rbase(long *array, int *index, int *code, int op, int *rbase)
 {
-	int p1;
+	long p1;
 
 	p1 = get_value(code, array, (*index) + 1, rbase);
+//	printf("index: %d | rbase: %d | to add: %ld | from index: %d\n", *index, *rbase, p1, *index + *rbase);
 	*rbase = *rbase + p1;
+	debug_me('r', *index, array, p1, *rbase);
 	*index = (*index) + 2;
 }
 
@@ -213,7 +274,7 @@ long	do_op(long *array, int *i, long output, int *start, char setting, int *rbas
 	if (op == 2)
 		(do_mul(array, i, &code, rbase));
 	if (op == 3)
-		(do_set(array, i, &code, setting, start, output));
+		(do_set(array, i, &code, setting, start, output, rbase));
 	if (op == 4)
 		output = do_prnt(array, i, &code, rbase);
 	if (op == 5)
@@ -256,7 +317,7 @@ long	intcode(long *array, long output, char setting)
 	i = 0;
 	while (array[i] != 99)
 	{
-		printf("index: %d | %-6ld\n", i, array[i]);
+//		printf("index: %d | %-6ld\n", i, array[i]);
 		output = do_op(array, &i, output, &start, setting, &rbase);
 	}
 	return (output);
@@ -311,9 +372,10 @@ int		main(int argc, char **input)
 		return (0);
 	fd = open(input[1], O_RDONLY);
 	org = get_array(fd, 2000);
-//	print_array(org, 2000);
+//	print_array(org, 100);
 //	max_signal = input_iterator(99999, org);
-	max_signal = intcode(org, 0, '1');
+	max_signal = intcode(org, 0, '2');
+//	print_array(org, 100);
 	printf("BOOST: %ld\n", max_signal);
 	return (0);
 }
