@@ -6,7 +6,7 @@
 /*   By: tbruinem <tbruinem@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/12/10 11:44:12 by tbruinem       #+#    #+#                */
-/*   Updated: 2019/12/10 18:58:24 by tbruinem      ########   odam.nl         */
+/*   Updated: 2019/12/10 23:41:25 by tbruinem      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,12 @@ typedef struct		s_stepper
 	t_coord			total;
 }					t_stepper;
 
-int g_size = 0;
+int					get_next_line(int fd, char **line);
+
+int					is_it_safe(char **map, t_coord goal, int max_size);
+int					get_total(char **map);
+char				**get_array(int fd, int *max_size);
+char				**dup_array(char **map);
+void				print_array(char **array, t_coord coords);
 
 #endif

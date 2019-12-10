@@ -6,7 +6,7 @@
 /*   By: tbruinem <tbruinem@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/12/05 20:01:13 by tbruinem       #+#    #+#                */
-/*   Updated: 2019/12/09 23:59:10 by tbruinem      ########   odam.nl         */
+/*   Updated: 2019/12/10 00:03:55 by tbruinem      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -374,7 +374,7 @@ int		main(int argc, char **input)
 	org = get_array(fd, 2000);
 //	print_array(org, 100);
 //	max_signal = input_iterator(99999, org);
-	max_signal = intcode(org, 0, '2');
+	max_signal = intcode(org, 0, '1');
 //	print_array(org, 100);
 	printf("BOOST: %ld\n", max_signal);
 	return (0);
