@@ -6,7 +6,7 @@
 /*   By: tbruinem <tbruinem@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/12/10 11:44:12 by tbruinem       #+#    #+#                */
-/*   Updated: 2019/12/10 16:05:36 by tbruinem      ########   odam.nl         */
+/*   Updated: 2019/12/10 18:58:24 by tbruinem      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ typedef struct		s_stepper
 	t_coord			step;
 	t_coord			total;
 }					t_stepper;
-
 
 int g_size = 0;
 

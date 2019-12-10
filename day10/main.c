@@ -6,7 +6,7 @@
 /*   By: tbruinem <tbruinem@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/12/10 11:44:32 by tbruinem       #+#    #+#                */
-/*   Updated: 2019/12/10 17:18:04 by tbruinem      ########   odam.nl         */
+/*   Updated: 2019/12/10 19:09:31 by tbruinem      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ int		is_it_safe(char **map, t_coord start, t_coord goal)
 	return (0);
 }
 
-void	del_ast(char **map, t_coord steps, t_coord old)
+void	del_ast(char **map, t_coord steps, t_coord old, int start)
 {
 	t_coord to;
 	t_coord goal;
@@ -148,8 +148,50 @@ void	del_ast(char **map, t_coord steps, t_coord old)
 	if (is_it_safe(map, old, to) == 0)
 		return ;
 	if (map[to.y][to.x] == '#')
-		map[to.y][to.x] = 'R';
-	return (del_ast(map, steps, to));
+	{
+		if (start != 1)
+		{
+			printf("steps I took: y%d,x%d | I came from y%d,x%d\n", steps.y, steps.x, old.y, old.x);
+			map[to.y][to.x] = 'R';
+		}
+		start = 0;
+	}
+	return (del_ast(map, steps, to, start));
+}
+
+t_coord	set_course(t_stepper data)
+{
+	t_coord course;
+
+	course = data.total;
+	if (data.step.x / data.step.y == 1 && data.step.x % data.step.y == 0)
+	{
+		course.x = 1;
+		course.y = 1;
+		if (data.step.x < 0)
+			course.x *= -1;
+		if (data.step.y < 0)
+			course.y *= -1;
+	}
+	else if (data.step.x == 0)
+	{
+		course.x = 0;
+		course.y = 1;
+		if (data.step.x < 0)
+			course.x *= -1;
+		if (data.step.y < 0)
+			course.y *= -1;
+	}
+	else if (data.step.y == 0)
+	{
+		course.x = 1;
+		course.y = 0;
+		if (data.step.x < 0)
+			course.x *= -1;
+		if (data.step.y < 0)
+			course.y *= -1;
+	}
+	return (course);
 }
 
 void	step_ast(char **map, t_stepper data) //recursively step $steps every time, counting the total, to give to del_ast if a # is encountered
@@ -163,26 +205,16 @@ void	step_ast(char **map, t_stepper data) //recursively step $steps every time, 
 	goal.x = (data.start.x + data.total.x) + data.step.x;
 	if (is_it_safe(map, start, goal) == 0)
 		return ;
+//	printf("Segfault?\n");
 	if (map[goal.y][goal.x] == '#')
 	{
+//		printf("No?\n");
 		data.total.x += data.step.x;
 		data.total.y += data.step.y;
-		if (data.step.x % data.step.y == 0)
-		{
-			data.total.x = 1;
-			data.total.y = 1;
-		}
-		if (data.step.x == 0)
-		{
-			data.total.x = 0;
-			data.total.y = 1;
-		}
-		if (data.step.y == 0)
-		{
-			data.total.y = 0;
-			data.total.x = 1;
-		}
-		return(del_ast(map, data.total, goal));
+		data.total = set_course(data);
+		printf("steps to take: y: %d | x: %d\n", data.total.y, data.total.x);
+		del_ast(map, data.total, goal, 1);
+//		map[goal.y][goal.x] == '#';
 	}
 //	return (step_ast(map, data));
 }
@@ -229,15 +261,11 @@ int		check_possibilities(char **map)
 		coords.x = 0;
 		while (map[coords.y][coords.x])
 		{
-//			printf("cur_y: %4d | cur_x: %4d | cur_char: %c\n", coords.y, coords.x, map[coords.y][coords.x]);
 			if (map[coords.y][coords.x] == '#')
 			{
 				dup = dup_array(map);
 				find_asteroid(dup, coords);			//is called when an asteroid is found
 				tmp_ast = get_total(dup);
-//				printf("As seen from %d,%d\n", coords.y, coords.x);
-//				print_array(dup, coords);
-//				printf("\n");
 				if (tmp_ast > max_ast)
 				{
 					b_coords = coords;
@@ -260,13 +288,18 @@ int		main(int argc, char **input)
 	int fd;
 	char **map;
 	char **dup;
+	t_coord pos;
 
 	if (argc < 2)
 		return (0);
 	fd = open(input[1], O_RDONLY);
 	map = get_array(fd);
-//	print_array(map);
-	printf("Maximum visible asteroids: %d\n", check_possibilities(map));
+	pos.x = 6;
+	pos.y = 3;
+	find_asteroid(map, pos);
+	print_array(map, pos);
+	printf("max: %d\n", get_total(map));
+//	printf("Maximum visible asteroids: %d\n", check_possibilities(map));
 //	dup = dup_array(map);
 //	print_array(dup);
 	return (0);
