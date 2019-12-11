@@ -6,7 +6,7 @@
 /*   By: tbruinem <tbruinem@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/12/10 11:44:12 by tbruinem       #+#    #+#                */
-/*   Updated: 2019/12/10 23:41:25 by tbruinem      ########   odam.nl         */
+/*   Updated: 2019/12/11 14:25:24 by tbruinem      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,5 +44,6 @@ int					get_total(char **map);
 char				**get_array(int fd, int *max_size);
 char				**dup_array(char **map);
 void				print_array(char **array, t_coord coords);
+int					get_div(t_coord course, int max_size);
 
 #endif

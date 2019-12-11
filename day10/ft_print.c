@@ -26,17 +26,19 @@ void	print_array(char **array, t_coord coords)
 			if (x == coords.x && y == coords.y)
 			{
 				printf("\033[1;32m");
-				printf("X");
+				printf("X ");
 				printf("\033[0m");
 			}
 			else if (array[y][x] == 'R')
 			{
 				printf("\033[1;31m");
-				printf("#");
+				printf("# ");
 				printf("\033[0m");
 			}
+			else if (array[y][x] == '.')
+				printf("%c ", array[y][x]);
 			else
-				printf("%c", array[y][x]);
+				printf("%c ", array[y][x]);
 			x++;
 		}
 		printf("\n");
