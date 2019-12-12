@@ -6,7 +6,7 @@
 /*   By: tbruinem <tbruinem@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/12/04 13:37:57 by tbruinem       #+#    #+#                */
-/*   Updated: 2019/12/04 21:57:05 by tbruinem      ########   odam.nl         */
+/*   Updated: 2019/12/10 19:22:58 by tbruinem      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,8 +200,6 @@ int		find_collisions(t_coords **wire1, t_coords **wire2)
 	int start = 1;
 	int			s_dist;
 	int			tmp_dist;
-	int			middle_x = 0;
-	int			middle_y = 0;
 	int			collision;
 	int			w1_s = 0;
 	int			w2_s = 0;
@@ -220,20 +218,20 @@ int		find_collisions(t_coords **wire1, t_coords **wire2)
 			if (collision == 1)
 			{
 				tmp_dist = get_distance(tmp->x, tmp->y);
-	//			printf("x:%d | y:%d | tmp_dist: %d\n", tmp->x, tmp->y, tmp_dist);
+//				printf("x:%d | y:%d | tmp_dist: %d\n", tmp->x, tmp->y, tmp_dist);
 //				printf("dist:%d | wire1: %d, wire2: %d\n", tmp_dist, w1_s, w1_s);
-//				if (s_dist > tmp_dist || start == 1)
-//				{
-//					s_dist = tmp_dist;
-//					printf("dist:%d | wire1: %d, wire2: %d\n", s_dist, w1_s, w1_s);
-//					start = 0;
-//				}
-				if (w1_s + w2_s < total || start == 1)
+				if (s_dist > tmp_dist || start == 1)
+				{
+					s_dist = tmp_dist;
+					printf("dist:%d | wire1: %d, wire2: %d\n", s_dist, w1_s, w1_s);
+					start = 0;
+				}
+/* 				if (w1_s + w2_s < total || start == 1)
 				{
 					total = w1_s + w2_s;
 					start = 0;
 					printf("total: %d\n", total);
-				}
+				} */
 			}
 			tmp = tmp->next;
 			w2_s++;
@@ -247,10 +245,14 @@ int		find_collisions(t_coords **wire1, t_coords **wire2)
 
 void	print_wire(t_coords *wire, int nb)
 {
+	int i;
+
+	i = 0;
 	while (wire)
 	{
-		printf("wire%d | x%d:y%d\n", nb, wire->x, wire->y);
+		printf("%d: wire%d | x%d:y%d\n", i, nb, wire->x, wire->y);
 		wire = wire->next;
+		i++;
 	}
 }
 

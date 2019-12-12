@@ -67,7 +67,6 @@ t_planet	*get_planets(int fd)
 			}
 			else
 				add_child(tmp, &found);				//if it does exist in the storage, I add it to its parent
-//			printf("%s\n", id);
 			i = 0;
 		}
 		else

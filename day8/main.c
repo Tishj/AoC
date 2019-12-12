@@ -148,7 +148,7 @@ int		main(int argc, char **input)
 		return (0);
 	fd = open(input[1], O_RDONLY);
 	l = get_layers(fd, 99, 25, 6);
-//	print_layers(l);
+	print_layers(l);
 	image = convert_layers(l);
 	print_image(image);
 	return (0);

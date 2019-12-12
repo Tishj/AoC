@@ -278,7 +278,7 @@ int		phase_iterator(int *orig, char *sequence)
 	phase = 0;
 	while (phase < 5)
 	{
-		printf("loop: %d | phase: %d | cur start: %d | cur index: %d | output: %d\n", loop, phase, start[phase], counters[phase], output);
+//		printf("loop: %d | phase: %d | cur start: %d | cur index: %d | output: %d\n", loop, phase, start[phase], counters[phase], output);
 		output = intcode(counters + phase, storage[phase], output, sequence[phase], start + phase, &phase, &loop);
 		phase++;
 		if (phase == 5 && loop == 1)
