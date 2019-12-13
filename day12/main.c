@@ -6,37 +6,11 @@
 /*   By: tbruinem <tbruinem@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/12/12 11:07:48 by tbruinem       #+#    #+#                */
-/*   Updated: 2019/12/12 16:29:08 by tbruinem      ########   odam.nl         */
+/*   Updated: 2019/12/13 15:21:18 by tbruinem      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "day12.h"
-
-t_coord	reset_coords(void)
-{
-	t_coord base;
-
-	base.x = 0;
-	base.y = 0;
-	base.z = 0;
-	return (base);
-}
-
-int		get_offset(int c1, int c2)
-{
-	if (c2 > c1)
-		return (1);
-	if (c2 < c1)
-		return (-1);
-	return (0);
-}
-
-int		nb_flip(int orig)
-{
-	if (orig < 0)
-		return (orig * -1);
-	return (orig);
-}
 
 t_moon	*update_moon(t_moon **start, t_moon *current)
 {
@@ -58,99 +32,110 @@ t_moon	*update_moon(t_moon **start, t_moon *current)
 	return (new);
 }
 
+int		moon_compare(t_moon *current, t_moon *orig)
+{
+/* 	printf("pos\n");
+	printf("cur x %d | orig x %d\n", current->pos.x, orig->pos.x);
+	printf("cur y %d | orig y %d\n", current->pos.y, orig->pos.y);
+	printf("cur z %d | orig z %d\n", current->pos.z, orig->pos.z);
+	printf("vel\n");
+	printf("cur x %d | orig x %d\n", current->vel.x, orig->vel.x);
+	printf("cur y %d | orig y %d\n", current->vel.y, orig->vel.y);
+	printf("cur z %d | orig z %d\n", current->vel.z, orig->vel.z); */
+	while (current)
+	{
+		if (current->pos.x != orig->pos.x)
+			return (0);
+		if (current->pos.y != orig->pos.y)
+			return (0);
+		if (current->pos.z != orig->pos.z)
+			return (0);
+		if (current->vel.x != orig->vel.x)
+			return (0);
+		if (current->vel.y != orig->vel.y)
+			return (0);
+		if (current->vel.z != orig->vel.z)
+			return (0);
+		current = current->next;
+		orig = orig->next;
+	}
+	return (1);
+}
+
+void	free_moons(t_moon *moons)
+{
+	t_moon *last;
+
+	while (moons)
+	{
+		last = moons;
+		moons = moons->next;
+		free(last);
+	}
+}
+
 t_moon	*time_skip(t_moon **moons)
 {
-	int		step;
+	unsigned long	step;
+	int		mod;
 	t_moon	*new;
+	t_moon	*orig;
 	t_moon	*newlst;
 	t_moon	*olditer;
+//	static int change = 0;
 
 	step = 0;
+	mod = 10;
+	orig = moon_dup(*moons);
 	newlst = NULL;
-	olditer = *moons;
-	while (step < 1000)
+	while (step < 1000000)
 	{
-		printf("step %d\n", step);
-		print_moons(*moons);
+		if (step)
+			if ((*moons)->vel.x == 0)
+				if ((*moons)->vel.y == 0)
+					if ((*moons)->vel.z == 0)
+						if (moon_compare(*moons, orig))
+							break ;
+		if (step % mod == 0)
+		{
+			printf("step %lu\n", step);
+			mod = mod * 10;
+		}
+		olditer = *moons;
 		while (olditer)
 		{
 			new = update_moon(moons, olditer);
+//			change = get_diff(new, olditer, change);
 			moon_addbck(&newlst, new);
 			olditer = olditer->next;
 		}
+		free_moons(*moons);
 		*moons = newlst;
-		olditer = *moons;
 		newlst = NULL;
 		step++;
 	}
+	print_moons(*moons);
+	printf("\n");
+	print_moons(orig);
+	printf("steps %lu\n", step);
+	free_moons(orig);
 	return (*moons);
 }
 
-int		get_sum(t_moon *moons, char c)
+int		main(int argc, char **input)
 {
-	int ret;
-
-	ret = 0;
-	if (c == 'p')
-	{
-		while (moons)
-		{
-			ret += nb_flip(moons->pos.x);
-			ret += nb_flip(moons->pos.y);
-			ret += nb_flip(moons->pos.z);
-			moons = moons->next;
-		}
-	}
-	if (c == 'k')
-	{
-		while (moons)
-		{
-			ret += nb_flip(moons->vel.x);
-			ret += nb_flip(moons->vel.y);
-			ret += nb_flip(moons->vel.z);
-			moons = moons->next;
-		}
-	}
-	return (ret);
-}
-
-int		get_planet_energy(t_coord pos, t_coord vel)
-{
-	int kin;
-	int pot;
-
-	printf("pos\nx %d, y %d, z %d\n", pos.x, pos.y, pos.z);
-	printf("vel\nx %d, y %d, z %d\n", vel.x, vel.y, vel.z);
-	kin = nb_flip(vel.x) + nb_flip(vel.y) + nb_flip(vel.z);
-	pot = nb_flip(pos.x) + nb_flip(pos.y) + nb_flip(pos.z);
-	printf("Potential %d | Kinetic %d | Total: %d\n", pot, kin, kin * pot);
-	return (kin * pot);
-}
-
-int		get_total_energy(t_moon *moons)
-{
-	t_moon	*final;
-	int		ret;
-
-	ret = 0;
-	final = time_skip(&moons);
-	while (moons)
-	{
-		ret += get_planet_energy(moons->pos, moons->vel);
-		moons = moons->next;
-	}
-	printf("Total: %d\n", ret);
-	return (ret);
-}
-
-int		main(void)
-{
+	int fd;
 	int		energy;
 	t_moon	*moons;
 
-	moons = init_moons();
+//	if (argc < 2);
+//		return (0);
+	fd = open(input[1], O_RDONLY);
+	moons = get_moons(fd);
 //	print_moons(moons);
-	energy = get_total_energy(moons);
+	time_skip(&moons);
+	free_moons(moons);
+//	energy = get_total_energy(moons);
 //	printf("Total energy: %d\n");
 	return (0);
 }
