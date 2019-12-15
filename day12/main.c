@@ -6,7 +6,7 @@
 /*   By: tbruinem <tbruinem@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/12/12 11:07:48 by tbruinem       #+#    #+#                */
-/*   Updated: 2019/12/13 15:21:18 by tbruinem      ########   odam.nl         */
+/*   Updated: 2019/12/14 21:21:09 by tbruinem      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,9 @@ int		moon_compare(t_moon *current, t_moon *orig)
 	printf("cur z %d | orig z %d\n", current->vel.z, orig->vel.z); */
 	while (current)
 	{
-		if (current->pos.x != orig->pos.x)
+		if (current->pos.z != orig->pos.z)
 			return (0);
-		if (current->pos.y != orig->pos.y)
+/* 		if (current->pos.y != orig->pos.y)
 			return (0);
 		if (current->pos.z != orig->pos.z)
 			return (0);
@@ -56,6 +56,10 @@ int		moon_compare(t_moon *current, t_moon *orig)
 			return (0);
 		if (current->vel.z != orig->vel.z)
 			return (0);
+		current = current->next;
+		orig = orig->next;
+	}
+	return (1); */
 		current = current->next;
 		orig = orig->next;
 	}
@@ -77,7 +81,6 @@ void	free_moons(t_moon *moons)
 t_moon	*time_skip(t_moon **moons)
 {
 	unsigned long	step;
-	int		mod;
 	t_moon	*new;
 	t_moon	*orig;
 	t_moon	*newlst;
@@ -85,22 +88,13 @@ t_moon	*time_skip(t_moon **moons)
 //	static int change = 0;
 
 	step = 0;
-	mod = 10;
 	orig = moon_dup(*moons);
 	newlst = NULL;
-	while (step < 1000000)
+	while (1)
 	{
 		if (step)
-			if ((*moons)->vel.x == 0)
-				if ((*moons)->vel.y == 0)
-					if ((*moons)->vel.z == 0)
-						if (moon_compare(*moons, orig))
-							break ;
-		if (step % mod == 0)
-		{
-			printf("step %lu\n", step);
-			mod = mod * 10;
-		}
+			if (moon_compare(*moons, orig))
+				break ;
 		olditer = *moons;
 		while (olditer)
 		{

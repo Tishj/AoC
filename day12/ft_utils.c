@@ -12,6 +12,22 @@
 
 #include "day12.h"
 
+int		get_diff(t_moon *orig, t_moon *current, int diff)
+{
+/* 	printf("comparing..\n");
+	printf("pos\ncurrent x %d | orig x%d\n", current->pos.x, orig->pos.x);
+	printf("current y %d | orig y%d\n", current->pos.y, orig->pos.y);
+	printf("current z %d | orig z%d\n", current->pos.z, orig->pos.z);
+	printf("vel\ncurrent x %d | orig x%d\n", current->vel.x, orig->vel.x);
+	printf("current y %d | orig y%d\n", current->vel.y, orig->vel.y);
+	printf("current z %d | orig z%d\n", current->vel.z, orig->vel.z); */
+	diff += (orig->pos.x - current->pos.x);
+	diff += (orig->pos.y - current->pos.y);
+	diff += (orig->pos.z - current->pos.z);
+//	printf("difference %d\n", diff);
+	return (diff);
+}
+
 t_coord	reset_coords(void)
 {
 	t_coord base;
