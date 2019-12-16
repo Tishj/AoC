@@ -1,0 +1,61 @@
+		(ft_do_add(array, i, &code, rbase));
+		(ft_do_comp(array, i, &code, op, rbase));
+		(ft_do_jump(array, i, &code, op, rbase));
+		(ft_do_mul(array, i, &code, rbase));
+		(ft_do_rbase(array, i, &code, op, rbase));
+		(ft_do_set(array, i, &code, setting, start, output, rbase));
+		dup = ft_arrdup(orig, 506);
+		ft_debug('<', *index, array, p1, p2);
+		ft_debug('=', *index, array, p1, p2);
+		ft_debug('f', *index, array, p1, p2);
+		ft_debug('t', *index, array, p1, p2);
+		input = ft_get_valid(input - 1);
+		output = ft_do_op(array, &i, output, &start, setting, &rbase);
+		output = ft_do_prnt(array, i, &code, rbase);
+		output = ft_intcode(dup, output, *(sequence + phase));
+		output = ft_phase_iter(orig, sequence);
+		res = ft_is_possible(tmp);
+		sequence = ft_itoa(input);
+		tmp = ft_itoa(start);
+	ft_debug('*', *index, array, p1, p2);
+	ft_debug('+', *index, array, p1, p2);
+	ft_debug('i', *index, array, p1, 0);
+	ft_debug('o', *index, array, p1, 0);
+	ft_debug('r', *index, array, p1, *rbase);
+	if (ft_match_counter(start) == 0)
+	if (ft_mod(&code) != 0 || (op < 1 || 9 < op))
+	input = ft_get_valid(input);
+	max_signal = ft_intcode(org, 0, '1');
+	mod = ft_mod(code);
+	op = ft_mod(&code);
+	org = ft_get_array(fd, 2000);
+	p1 = ft_get_value(code, array, (*index) + 1, rbase);
+	p2 = ft_get_value(code, array, (*index) + 2, rbase);
+	posmode = ft_mod(code);
+/*   ft_debugger.c                                      :+:    :+:            */
+/*   ft_do_op.c                                         :+:    :+:            */
+/*   ft_get_valid.c                                        :+:    :+:            */
+/*   ft_itoa.c                                          :+:    :+:            */
+//	ft_print_arr(org, 100);
+//	max_signal = ft_input_iter(99999, org);
+char			*ft_itoa(int n)
+int		ft_get_valid(int start)
+int		ft_input_iter(int input, long *orig)
+int		ft_is_possible(char *start)
+int		ft_match_counter(char *start)
+int		ft_mod(int *value)
+int		ft_phase_iter(long *orig, char *sequence)
+long	*ft_arrdup(long *org, int len)
+long	*ft_get_array(int fd, int len)
+long	ft_do_op(long *array, int *i, long output, int *start, char setting, int *rbase)
+long	ft_do_prnt(long *array, int *index, int *code, int *rbase)
+long	ft_get_value(int *code, long *array, int index, int *rbase)
+long	ft_intcode(long *array, long output, char setting)
+void	ft_debug(char c, int i, long *array, long p1, long p2)
+void	ft_do_add(long *array, int *index, int *code, int *rbase)
+void	ft_do_comp(long *array, int *index, int *code, int op, int *rbase)
+void	ft_do_jump(long *array, int *index, int *code, int op, int *rbase)
+void	ft_do_mul(long *array, int *index, int *code, int *rbase)
+void	ft_do_rbase(long *array, int *index, int *code, int op, int *rbase)
+void	ft_do_set(long *array, int *index, int *code, char setting,
+void	ft_print_arr(long *array, int len)
