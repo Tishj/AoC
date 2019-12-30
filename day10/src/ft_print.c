@@ -12,7 +12,7 @@
 
 #include "day10.h"
 
-void	print_array(char **array, t_coord coords)
+void	print_array(char **array)
 {
 	int x;
 	int y;
@@ -23,20 +23,20 @@ void	print_array(char **array, t_coord coords)
 		x = 0;
 		while (array[y][x])
 		{
-			if (x == coords.x && y == coords.y)
-			{
-				printf("\033[1;32m");
-				printf("X ");
-				printf("\033[0m");
-			}
-			else if (array[y][x] == 'R')
+			if (array[y][x] == 'R')
 			{
 				printf("\033[1;31m");
-				printf("# ");
+				printf("D ");
 				printf("\033[0m");
 			}
 			else if (array[y][x] == '.')
 				printf("%c ", array[y][x]);
+			else if (array[y][x] == 'D')
+			{
+				printf("\033[1;31m");
+				printf("D ");
+				printf("\033[0m");
+			}
 			else
 				printf("%c ", array[y][x]);
 			x++;
@@ -44,4 +44,5 @@ void	print_array(char **array, t_coord coords)
 		printf("\n");
 		y++;
 	}
+//	printf("-------------------------------------------------------------------------\n");
 }

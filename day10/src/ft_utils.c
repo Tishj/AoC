@@ -26,26 +26,11 @@ int		get_div(t_coord course, int max_size)
 	return (0);
 }
 
-int		get_total(char **map)
+int		nb_flip(int nb)
 {
-	int ast;
-	int x;
-	int y;
-
-	y = 0;
-	ast = 0;
-	while (map[y])
-	{
-		x = 0;
-		while (map[y][x])
-		{
-			if (map[y][x] == '#')
-				ast++;
-			x++;
-		}
-		y++;
-	}
-	return (ast);
+	if (nb < 0)
+		return (-1);
+	return (1);
 }
 
 int		is_it_safe(char **map, t_coord goal, int max_size)

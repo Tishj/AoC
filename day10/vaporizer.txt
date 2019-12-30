@@ -1,0 +1,35 @@
+Q_TOPRIGHT:
+X = 0	-> 1
+Y = -1	-> 0
+
+Q_BOTRIGHT:
+X = 1	-> 0
+Y = 0	-> 1
+
+Q_BOTLEFT;
+X = 0	-> -1
+Y = 1	-> 0
+
+Q_TOPLEFT:
+X = -1	-> 0
+Y = 0	-> -1
+
+ft_asteroid_vaporizer
+
+fetches the amount of asteroids left using ft_asteroid_count
+initializes direction to Q_TOPRIGHT
+initialize a list called ast_register
+
+we send the coordinates out to ft_asteroid_del
+
+
+
+ft_asteroid_del
+
+check if the coordinates fall within the array (maxsize and 0)
+if not? return;
+
+we take the coordinates, check if the number is round using ft_fcoord_isround
+if it's round we check the array to see if there's an asteroid on that location
+if there is an asteroid, we then remove it and add the coordinates to the ast_register
+

@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   ft_input.c                                         :+:    :+:            */
+/*   ft_map.c                                           :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: tbruinem <tbruinem@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2019/12/10 23:18:10 by tbruinem       #+#    #+#                */
-/*   Updated: 2019/12/10 23:18:10 by tbruinem      ########   odam.nl         */
+/*   Created: 2019/12/29 12:30:38 by tbruinem       #+#    #+#                */
+/*   Updated: 2019/12/29 12:30:38 by tbruinem      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "day10.h"
 
-char	**dup_array(char **map)
+char	**ft_map_dup(char **map)
 {
 	int		y;
 	int		x;
@@ -36,7 +36,7 @@ char	**dup_array(char **map)
 	return (dup);
 }
 
-char	**get_array(int fd, int *max_size)
+char	**ft_map_get(int fd, int *max_size)
 {
 	int		red;
 	char	c;

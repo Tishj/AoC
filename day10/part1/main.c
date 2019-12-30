@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   main_part2.c                                       :+:    :+:            */
+/*   main.c                                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: tbruinem <tbruinem@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2019/12/10 11:44:32 by tbruinem       #+#    #+#                */
-/*   Updated: 2019/12/11 21:21:02 by tbruinem      ########   odam.nl         */
+/*   Updated: 2019/12/11 21:38:27 by tbruinem      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,9 @@ void	del_ast(char **map, t_coord steps, t_coord old, int max_size)
 	if (is_it_safe(map, current, max_size) == 0)
 		return ;
 	if (map[current.y][current.x] == '#')
-	{
 		map[current.y][current.x] = 'R';
-		return ;
-	}
+//	print_array(map, current);
+//	sleep(1);
 	return (del_ast(map, steps, current, max_size));
 }
 
@@ -43,13 +42,13 @@ t_coord	set_course(t_stepper data, int max_size)
 
 	course.x = data.total.x;
 	course.y = data.total.y;
-	if (course.x != 0 && course.y != 0)
+	if (course.x != 0 && course.y != 0) //if either one is zero, there's no pattern to be made
 	{
 		div = get_div(course, max_size);
 		if (div != 0)
 		{
-			course.x = course.x / (div * nb_flip(div));
-			course.y = course.y / (div * nb_flip(div));
+			course.x = course.x / (div * nb_flip(div)); //if I divide -4 by (-2 * -1 = 2) I get 2;
+			course.y = course.y / (div * nb_flip(div)); //if I divide 2 by (-2 * -1 = 2) I get 1;
 		}
 	}
 	if (data.total.x == 0)
@@ -65,11 +64,11 @@ t_coord	set_course(t_stepper data, int max_size)
 	return (course);
 }
 
-void	scout_ast(char **map, t_stepper data, int max_size)
+void	scout_ast(char **map, t_stepper data, int max_size) //recursively step $steps every time, counting the total, to give to del_ast if a # is encountered
 {
 	t_coord current;
 
-	current.y = (data.start.y + data.total.y) + data.step.y;
+	current.y = (data.start.y + data.total.y) + data.step.y; //current is the start + the total(0 at first) + the step
 	current.x = (data.start.x + data.total.x) + data.step.x;
 	if (is_it_safe(map, current, max_size) == 0)
 		return ;
@@ -85,7 +84,7 @@ void	scout_ast(char **map, t_stepper data, int max_size)
 	return (scout_ast(map, data, max_size));
 }
 
-void	find_asteroid(char **map, t_coord start, int max_size)
+void	find_asteroid(char **map, t_coord start, int max_size) //this function will start at an asteroid, and send step_ast in each direction
 {
 	t_coord step;
 	t_stepper data;
@@ -99,97 +98,15 @@ void	find_asteroid(char **map, t_coord start, int max_size)
 		step.x = -max_size;
 		while (step.x < max_size)
 		{
-			if (step.x != 0 || step.y != 0)
+			if (step.x != 0 || step.y != 0) //only send when x and y are not both 0, if one is 0 it's still fine
 			{
 				data.step.x = step.x;
 				data.step.y = step.y;
-				scout_ast(map, data, max_size);
+				scout_ast(map, data, max_size); //a scout is send to every possible spot
 			}
 			step.x++;
 		}
 		step.y++;
-	}
-}
-
-int		get_cycle(t_coord goal, int max_size, int cycle)
-{
-	int ret;
-
-	if (goal.y == 0 && goal.x == (max_size - 1) / 2)
-		ret = 0;
-	else if (goal.y == 0 && goal.x == (max_size - 1))
-		ret = 1;
-	else if (goal.y == (max_size - 1) && goal.x == (max_size - 1))
-		ret = 2;
-	else if (goal.y == (max_size - 1) && goal.x == 0)
-		ret = 3;
-	else if (goal.y == 0 && goal.x == 0)
-		ret = 4;
-	else
-		ret = cycle;
-	if (ret != cycle)
-		printf("New cycle: %d\n", ret);
-	return (ret);
-}
-
-t_coord	smallest_step(t_coord orig)
-{
-	printf("original step: y%d, x%d\n", orig.y, orig.x);
-	if (orig.x == 0 && orig.y != 0)
-		orig.y /= (orig.y * nb_flip(orig.y));
-	else if (orig.y == 0 && orig.x != 0)
-		orig.x /= (orig.x * nb_flip(orig.x));
-	else if (orig.y != 0 && orig.x != 0)
-	{
-		if (orig.y % orig.x == 0)
-		{
-			orig.y /= (orig.x * nb_flip(orig.x));
-			orig.x /= (orig.x * nb_flip(orig.x));
-		}
-		else if (orig.x % orig.y == 0)
-		{
-			orig.y /= (orig.y * nb_flip(orig.y));
-			orig.x /= (orig.y * nb_flip(orig.y));
-		}
-	}
-	printf("new step: y%d, x%d\n", orig.y, orig.x);
-	return (orig);
-}
-
-void	vaporizer(char **map, int max_size)
-{
-	t_coord goal;
-	t_coord step;
-	t_coord start;
-	int ast;
-	int cyc;
-
-	start.x = max_size / 2;
-	start.y = max_size / 2;
-	goal.y = 0;
-	goal.x = max_size / 2;
-	ast = get_total(map);
-	cyc = 0;
-	while (ast)
-	{
-		step = goal;
-		step.x -= start.x;
-		step.y -= start.y;
-		step = smallest_step(step);
-		printf("ast: %d | goal: y%d, x%d\n", ast, goal.y, goal.x);
-		del_ast(map, step, start, max_size);
-		cyc = get_cycle(goal, max_size, cyc);
-		if (cyc == 0 || cyc == 4)
-			goal.x++;
-		if (cyc == 1)
-			goal.y++;
-		if (cyc == 2)
-			goal.x--;
-		if (cyc == 3)
-			goal.y--;
-		print_array(map, goal);
-		sleep(1);
-		ast = get_total(map);
 	}
 }
 
@@ -212,8 +129,10 @@ int		check_possibilities(char **map, int max_size)
 			if (map[coords.y][coords.x] == '#')
 			{
 				dup = dup_array(map);
-				find_asteroid(dup, coords, max_size);
+				find_asteroid(dup, coords, max_size);			//is called when an asteroid is found
 				tmp_ast = get_total(dup) - 1;
+				print_array(dup, coords);
+				sleep(1);
 				if (tmp_ast > max_ast)
 				{
 					b_coords = coords;
@@ -243,7 +162,6 @@ int		main(int argc, char **input)
 		return (0);
 	fd = open(input[1], O_RDONLY);
 	map = get_array(fd, &max_size);
-	vaporizer(map, max_size);
-//	printf("Maximum visible asteroids: %d\n", check_possibilities(map, max_size));
+	printf("Maximum visible asteroids: %d\n", check_possibilities(map, max_size));
 	return (0);
 }
